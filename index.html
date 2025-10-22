@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generasi Tumbuh - Pengukuran Gizi Anak</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #e3f2fd 0%, #fff9c4 100%);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #42a5f5 0%, #478ed1 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        /* Main Content */
+        main {
+            padding: 3rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #42a5f5;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 3px solid #ffd54f;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #42a5f5;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Result Section */
+        .result {
+            display: none;
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            border-left: 5px solid #ffd54f;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h4 {
+            color: #f57c00;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-item {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status.normal {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .status.warning {
+            background: #fff9c4;
+            color: #f57c00;
+        }
+
+        .status.danger {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        /* Info Section */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card h4 {
+            color: #42a5f5;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .info-card ul {
+            padding-left: 1.5rem;
+        }
+
+        .info-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Counselor Section */
+        .counselor {
+            background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .counselor-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .counselor-info h4 {
+            color: #1565c0;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .counselor-info p {
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #263238;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .counselor {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🌱 Generasi Tumbuh</h1>
+                    <p>Memantau Tumbuh Kembang Anak Indonesia</p>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#beranda">Beranda</a></li>
+                        <li><a href="#kalkulator">Kalkulator</a></li>
+                        <li><a href="#informasi">Informasi</a></li>
+                        <li><a href="#konselor">Konselor</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero" id="beranda">
+        <div class="container">
+            <h2>Selamat Datang di Generasi Tumbuh</h2>
+            <p>Platform pengukuran dan pemantauan status gizi anak berbasis standar WHO</p>
+            <p>✨ Cepat • Akurat • Terpercaya ✨</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <!-- Kalkulator Gizi -->
+        <section id="kalkulator">
+            <div class="card">
+                <h3>📊 Kalkulator Status Gizi Anak</h3>
+                <form id="nutritionForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="childName">Nama Anak:</label>
+                            <input type="text" id="childName" required placeholder="Masukkan nama anak">
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Jenis Kelamin:</label>
+                            <select id="gender" required>
+                                <option value="">Pilih...</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="age">Usia (bulan):</label>
+                            <input type="number" id="age" required placeholder="Contoh: 24" min="0" max="60">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Berat Badan (kg):</label>
+                            <input type="number" id="weight" step="0.1" required placeholder="Contoh: 12.5">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="height">Tinggi Badan (cm):</label>
+                            <input type="number" id="height" step="0.1" required placeholder="Contoh: 85.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="headCircumference">Lingkar Kepala (cm):</label>
+                            <input type="number" id="headCircumference" step="0.1" placeholder="Opsional">
+                        </div>
+                    </div>
+
+                    <button type="submit">🔍 Analisis Status Gizi</button>
+                </form>
+
+                <div id="result" class="result">
+                    <h4>📋 Hasil Analisis Status Gizi</h4>
+                    <div id="resultContent"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Informasi Gizi -->
+        <section id="informasi">
+            <div class="card">
+                <h3>📚 Informasi Penting Tentang Gizi Anak</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>🍎 Gizi Seimbang</h4>
+                        <ul>
+                            <li>Karbohidrat: Nasi, roti, kentang</li>
+                            <li>Protein: Ikan, telur, daging, kacang</li>
+                            <li>Vitamin: Buah dan sayuran</li>
+                            <li>Susu: 2-3 gelas per hari</li>
+                            <li>Air putih: 6-8 gelas per hari</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>⚠️ Tanda Malnutrisi</h4>
+                        <ul>
+                            <li>Berat badan tidak naik</li>
+                            <li>Kulit kering dan pucat</li>
+                            <li>Rambut mudah rontok</li>
+                            <li>Mudah sakit dan lemas</li>
+                            <li>Perut buncit</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>✅ Tips Pertumbuhan Optimal</h4>
+                        <ul>
+                            <li>Berikan ASI eksklusif 6 bulan</li>
+                            <li>MPASI bergizi sejak 6 bulan</li>
+                            <li>Imunisasi lengkap</li>
+                            <li>Aktivitas fisik teratur</li>
+                            <li>Tidur cukup 10-12 jam</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Konselor Section -->
+        <section id="konselor">
+            <div class="card">
+                <h3>👩‍⚕️ Konselor Gizi
